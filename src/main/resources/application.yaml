@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      transaction-id-prefix: tx-tumbling-window
+      retries: 3
+      properties:
+        enable.idempotence: true
+    consumer:
+      bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: tumbling-window-consumers
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      isolation-level: read_committed
+      properties:
+        spring.json.value.default.type: ru.egartech.listener.Payment
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 1
+      type: batch
